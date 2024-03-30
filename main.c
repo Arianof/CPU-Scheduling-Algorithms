@@ -155,8 +155,90 @@ int main() {
         }
         printf("average waiting time is: %f \n", twt/n);
         printf("average turnAround time is: %f", total_tat/n);
+    }
+    //robin round algorithm
+    else{
+        int n, quantum, temp, pos;
+        double twt = 0;
+        double total_tat = 0;
+        struct CPU_Sdl RR;
+        printf("Enter number of processes:\n");
+        scanf("%d", &n);
+        printf("Enter IDs of processes:\n");
+        for (int i = 0; i < n; ++i)
+            scanf("%d", &RR.pid[i]);
+        printf("Enter burst time of all processes:\n");
+        for (int i = 0; i < n; ++i)
+            scanf("%d", &RR.bt[i]);
+        printf("Enter quantum time:\n");
+        scanf("%d", &quantum);
+        //copy burst time of all processes for calculating waiting time and turnaround time
+        int temp_bt[n];
+        for (int i = 0; i < n; ++i) {
+            temp_bt[i] = RR.bt[i];
+        }
+        //current time
+        int t = 0;
+        //keep traversing until all processes are completed
+        //calculate waiting time of all processes
+        while(1){
+            int flag = 1;
+            for (int i = 0; i < n; ++i) {
+                if(temp_bt[i]){
+                    flag = 0;
+                    if(temp_bt[i] > quantum){
+                        t += quantum;
+                        temp_bt[i] -= quantum;
+                    }else{
+                        t += temp_bt[i];
+                        RR.wt[i] = t - RR.bt[i];
+                        temp_bt[i] = 0;
+                        twt += RR.wt[i];
+                    }
+                }
+            }
+            if(flag == 1)
+                break;
+        }
+        //calculate turnaround time of all processes
+        for (int i = 0; i < n; ++i) {
+            RR.TurnaroundTime[i] = RR.bt[i] + RR.wt[i];
+            total_tat += RR.TurnaroundTime[i];
+        }
 
+        //sort processes base of higher priority
+        for (int i = 0; i < n; ++i) {
+            pos = i;
+            for (int j = i + 1; j < n; ++j)
+                if(RR.TurnaroundTime[j] < RR.TurnaroundTime[pos])
+                    pos = j;
+            temp = RR.TurnaroundTime[pos];
+            RR.TurnaroundTime[pos] = RR.TurnaroundTime[i];
+            RR.TurnaroundTime[i] = temp;
 
+            temp = RR.pid[pos];
+            RR.pid[pos] = RR.pid[i];
+            RR.pid[i] = temp;
+
+            temp = RR.bt[pos];
+            RR.bt[pos] = RR.bt[i];
+            RR.bt[i] = temp;
+
+            temp = RR.wt[pos];
+            RR.wt[pos] = RR.wt[i];
+            RR.wt[i] = temp;
+        }
+
+        printf("Process ID      Burst time      Waiting Time    TurnAround time\n");
+        for (int i = 0; i < n; ++i) {
+            printf("%d \t\t", RR.pid[i]);
+            printf("%d \t\t", RR.bt[i]);
+            printf("%d \t\t", RR.wt[i]);
+            printf("%d \t\t", RR.TurnaroundTime[i]);
+            printf("\n");
+        }
+        printf("average waiting time is: %f \n", twt/n);
+        printf("average turnAround time is: %f", total_tat/n);
     }
     return 0;
 }
