@@ -78,10 +78,7 @@ int main() {
         double twt = 0;
         double total_tat = 0;
         for (int i = 1; i < n; ++i) {
-            SJF.wt[i] = 0;
-            for (int j = 0; j < i; ++j) {
-                SJF.wt[i] += SJF.bt[j];
-            }
+            SJF.wt[i] = SJF.bt[i - 1] + SJF.wt[i - 1];
             twt += SJF.wt[i];
         }
         for (int i = 0; i < n; ++i) {
@@ -99,7 +96,10 @@ int main() {
         }
         printf("average waiting time is: %f \n", twt/n);
         printf("average turnAround time is: %f", total_tat/n);
-
+    }
+    //priority algorithms
+    else if(sch_case == 3){
+        
     }
     return 0;
 }
