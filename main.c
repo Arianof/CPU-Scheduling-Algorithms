@@ -99,7 +99,64 @@ int main() {
     }
     //priority algorithms
     else if(sch_case == 3){
-        
+        int n, pos, temp;
+        struct CPU_Sdl P;
+        printf("Enter number of processes:\n");
+        scanf("%d", &n);
+        printf("Enter IDs of processes:\n");
+        for (int i = 0; i < n; ++i)
+            scanf("%d", &P.pid[i]);
+        printf("Enter burst time of all processes:\n");
+        for (int i = 0; i < n; ++i)
+            scanf("%d", &P.bt[i]);
+        printf("Enter Priority of all processes\n");
+        for (int i = 0; i < n; ++i)
+            scanf("%d", &P.priority[i]);
+
+        //sort processes base of higher priority
+        for (int i = 0; i < n; ++i) {
+            pos = i;
+            for (int j = i + 1; j < n; ++j)
+                if(P.priority[j] > P.priority[pos])
+                    pos = j;
+            temp = P.priority[pos];
+            P.priority[pos] = P.priority[i];
+            P.priority[i] = temp;
+
+            temp = P.pid[pos];
+            P.pid[pos] = P.pid[i];
+            P.pid[i] = temp;
+
+            temp = P.bt[pos];
+            P.bt[pos] = P.bt[i];
+            P.bt[i] = temp;
+        }
+        //calculating waiting time and turnaround time of all processes
+        P.wt[0] = 0;
+        double twt = 0;
+        double total_tat = 0;
+        for (int i = 1; i < n; ++i) {
+            P.wt[i] = P.wt[i - 1] + P.bt[i - 1];
+            twt += P.wt[i];
+        }
+        for (int i = 0; i < n; ++i) {
+            P.TurnaroundTime[i] = P.bt[i] + P.wt[i];
+            total_tat += P.TurnaroundTime[i];
+        }
+
+        printf("Process ID      Priority      Burst time      Waiting Time    TurnAround time\n");
+        for (int i = 0; i < n; ++i) {
+            printf("%d \t\t", P.pid[i]);
+            printf("%d \t\t", P.priority[i]);
+            printf("%d \t\t", P.bt[i]);
+            printf("%d \t\t", P.wt[i]);
+            printf("%d \t\t", P.TurnaroundTime[i]);
+            printf("\n");
+        }
+        printf("average waiting time is: %f \n", twt/n);
+        printf("average turnAround time is: %f", total_tat/n);
+
+
     }
     return 0;
 }
